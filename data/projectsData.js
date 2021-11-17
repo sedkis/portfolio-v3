@@ -1,19 +1,28 @@
 const projectsData = [
   {
-    title: 'A Search Engine',
-    description: `What if you could look up any information in the world? Webpages, images, videos
-    and more. Google has many features to help you find exactly what you're looking
-    for.`,
-    imgSrc: '/static/images/google.png',
-    href: 'https://www.google.com',
+    title: 'Tech Lead, Americas @ Tyk',
+    description: `Consulting for the largest brands in the worlds and spear-heading their digital transformation journeys`,
+    imgSrc: '/static/images/projects/tyklogo.png',
+    href: 'https://www.tyk.io',
   },
   {
-    title: 'The Time Machine',
-    description: `Imagine being able to travel back in time or to the future. Simple turn the knob
-    to the desired date and press "Go". No more worrying about lost keys or
-    forgotten handphones with this simple yet affordable solution.`,
-    imgSrc: '/static/images/time-machine.jpg',
+    title: 'Co-Founder @ Serv',
+    description: `Allowing restaurants to adapt to a post-covid world   
+  in a way that benefits both patrons and restaurants.`,
+    imgSrc: '/static/images/projects/projectServ.png',
+    href: 'https://www.getserv.io',
+  },
+  {
+    title: 'Founder @ SedKodes',
+    description: `Teaching the world about software!`,
+    imgSrc: '/static/images/projects/youtubelogo2.png',
     href: '/blog/the-time-machine',
+  },
+  {
+    title: 'Founder @ Ajtima',
+    description: `Infinitely scalable marketplace built for the Middle East.`,
+    imgSrc: '/static/images/projects/cloudixia_screenshot.png',
+    href: 'https://ajtima.com',
   },
 ]
 
