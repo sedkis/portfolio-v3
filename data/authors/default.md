@@ -9,11 +9,15 @@ linkedin: https://www.linkedin.com/in/sedky
 github: https://github.com/sedkis
 ---
 
-My name is Sedky, and I'm a technical enthusiast, and tech lead for the Americas at [Tyk][1].
+I'm a computer scientist by education, software developer by trade, and a serial technologist at heart. In short, my passion is _solving technical problems._
 
-Though my passion is geared towards individual contribution, I take great pride in building and developing others. That's evident in time spent leading senior engineers, consultants, and C-level executives in day-to-day projects and discussions at Tyk. Moreso, it's evident in my time spent as a Professor, teaching software development to the next wave of professionals at Fanshawe College in London
+I am a tinkerer who teaches by example. I wield a desire to train, teach, and mentor others.
 
-Wearing many hats is becoming the status quo in our field. Here are some of the things I like to work on:
+A methodical approach to converting technical goals into timelines in combination with an outspoken personality allows me to bring ideas to life in order to prove out PoCs and deliver on time solutions.
+
+As a technical lead, Americas at Tyk, I lead a group of engineers in helping our customer's with their digital transformation journeys. This is largely during the presales journey, yet includes all parts of the customer success experience.
+
+This has been made possible with an expertise across many disciplines, from full stack development, solutions architecting, devops, and cloud architecture.
 
 <section>
 <section class="colorlib-services" data-section="services">
