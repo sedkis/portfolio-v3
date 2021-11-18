@@ -13,11 +13,11 @@ I'm a computer scientist by education, software developer by trade, and a serial
 
 I am a tinkerer who teaches by example. I wield a desire to train, teach, and mentor others.
 
-A methodical approach to converting technical goals into timelines in combination with an outspoken personality allows me to bring ideas to life in order to prove out PoCs and deliver on time solutions.
-
-As a technical lead, Americas at Tyk, I lead a group of engineers in helping our customer's with their digital transformation journeys. This is largely during the presales journey, yet includes all parts of the customer success experience.
+As a technical lead, Americas at Tyk, I lead a group of engineers in consulting for the largest brands in the worlds and spear-heading their digital transformation journeys. This is largely during the presales journey, yet includes all parts of the customer success experience.
 
 This has been made possible with an expertise across many disciplines, from full stack development, solutions architecting, devops, and cloud architecture.
+
+A methodical approach to converting technical goals into timelines in combination with an outspoken personality allows me to bring ideas to life in order to prove out PoCs and deliver on time solutions.
 
 <section>
 <section class="colorlib-services" data-section="services">
