@@ -1,0 +1,72 @@
+---
+title: Best Terminal Set up
+date: '2020-06-14'
+tags: ['cli']
+draft: false
+summary: Devops hates him!
+images: []
+layout: PostLayout
+---
+
+Having a really efficient CMD line is awesome. It can save you a lot of time. It’s good to take the time to set up a terminal that is intuitive and customized to you and your workflow.
+
+With the right software, you can do things like autocomplete your GIT commands, Docker commands and more. This alone is worth it. But also, you get **DARK MODE!**
+
+## Must Haves
+
+1. [iTerm2][1] — Make this your default Terminal NOW. check out all the [FEATURES][2]!
+2. [Oh My Zsh][3] — Steroids for your terminal. This gives us all the cool shit we need, like Autocomplete features, custom themes, and WAY MORE.
+
+Go and install these two.
+
+## Docker/Git Auto complete
+
+With iTerm2 and Oh My Zsh downloaded and installed, we can now add some plugins.
+
+Open your zsh profile, located in ~./.zshrc
+
+edit the plugins section:
+
+```
+plugins=(
+ git
+ osx
+ docker
+ docker-compose
+)
+```
+
+Now we get sweet autofill features. Here’s a list of hundreds of others:
+
+```
+ohmyzsh/ohmyzsh
+🙃 A delightful community-driven (with 1500+ contributors) framework for managing your zsh configuration. Includes 200+…
+github.com
+```
+
+[Source](https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins)
+
+such as minikube, node, and more!
+
+## Quick line jumps!
+
+Are you a peasant that holds `->` until you reach the end of the line? Well no more you aren’t!
+
+You can setup iTerm2 to let you jump around the current line. Find the basics here to get you started:
+
+```
+iTerm 2: How to set keyboard shortcuts to jump to beginning/end of line?
+I can see that Ctrl+ left/ right jumps to the beginning/end of line. How to change this to Cmd+ left/ right arrow? In…
+```
+
+[Source](https://stackoverflow.com/a/22312856/11406190)
+
+## Quick directory jumps!
+
+A command line tool that helps you jump around to different directories using partial strings. Example:
+
+![z_gif](https://miro.medium.com/max/1400/0*G0AuH1S98EQATnlC.gif)
+
+[1]: https://www.iterm2.com/
+[2]: https://www.iterm2.com/features.html
+[3]: https://github.com/robbyrussell/oh-my-zsh

@@ -1,0 +1,97 @@
+---
+title: Environment Variables in Dockerized Java Microservice Environments
+date: '2019-03-18'
+tags: ['docker', 'java']
+draft: false
+summary: How to set up Docker Secrets in a containerized Java spring boot microservices environment
+images: []
+layout: PostLayout
+---
+
+Here’s an easy way to keep your Docker secrets in your version control, without having to create multiple Dockerfiles for each environment.
+
+Before you continue, I assume you have a decent understanding of:
+
+1. Docker (compose)
+2. Java
+
+We’ll create a Dockerfile with a generic secret name, and then we can map an environment specific secret to the generic secret name our Docker container is expecting.
+First let’s go ahead and create the docker secrets in our environment:
+
+```sh
+➜  echo "devpwd" | docker secret create my-secret-DEV -
+kgilm...
+➜  echo "prdpwd" | docker secret create my-secret-PRD -
+w8fbl...
+➜  docker secret ls
+ID                          NAME                DRIVER              CREATED             UPDATED
+kgilm...   my-secret-DEV                           13 seconds ago      13 seconds ago
+w8fbl...   my-secret-PRD                           2 seconds ago       2 seconds ago
+```
+
+Here’s our (only) Dockerfile:
+
+```Dockerfile
+FROM openjdk:8-jdk
+
+RUN mkdir -p /usr/app
+WORKDIR /usr/app
+
+COPY ./target/my-jar.jar .
+
+EXPOSE 8181
+
+CMD /usr/bin/java -jar \
+  -Dweb.security.api.password="$(cat /run/secrets/my-secret)" \
+  ./my-jar.jar
+```
+
+Only thing to take away from this is snippet on line 11:
+
+```
+    -Dweb.security.api.password=”$(cat /run/secrets/my-secret)”
+```
+
+We tell the container to inject a variable called “web.security.api.password” into the environment. The value comes from “$(cat /run/secrets/my-secret)”. When we add a Docker Secret to our container, it is automatically added to a file under the /run/secrets directory.
+
+Here’s our docker-compose (DEV):
+
+```yaml
+version: '3.7'
+
+services:
+  my-java-service:
+    image: 'my-java-service:latest'
+    secrets:
+      - source: my-secret-DEV
+        target: my-secret
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+secrets:
+  my-secret-DEV:
+    external: true
+```
+
+The big take away from this is that we declare a secret called
+
+```
+my-secret-DEV
+```
+
+and we map it to the secret that the container was expecting which we declared in the Dockerfile above, called
+
+```
+my-secret
+```
+
+So the only difference between a production compose file would be the secret name.
+So, to use them in our Java code, we just have to treat it like any other resource variable. We just use the property name
+
+```
+web.security.api.password
+```
+
+that we declared in the Dockerfile to have access to the environment variable.
+
+And now we have a modular, declarative way to manage environment variables in a containerized Java spring-boot microservices environment.
