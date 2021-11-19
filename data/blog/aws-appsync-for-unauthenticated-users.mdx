@@ -8,9 +8,7 @@ images: []
 layout: PostLayout
 ---
 
-## What are you reading today?
-
-This piece is both a warning to architects considering AWS Appync as well an actual how-to of how to implement unauthenticated access, skip down to the actual guide
+This piece is both a warning to architects considering AWS Appync as well an actual how-to guide on implementing unauthenticated access to your app.
 
 ## The word of warning
 
@@ -24,7 +22,7 @@ For example, let's say your APP has authenticated and unauthenticated users. Fai
 
 The right approach in a microservices environment is to use an API Gateway like Tyk for a centralized API management and authentication strategy.
 
-This is not possible with [AWS Appsync subscriptions][1] which are used to build real-time apps.
+This is not possible with [AWS Appsync subscriptions][1], which are used to build real-time apps.
 
 AWS forces you to use their AWS IAM solutions for authentication and authorization. So if your company is using Okta, Gluu, or any other IAM, forget it, it's not possible unless it's federated by AWS Cognito.
 
@@ -43,7 +41,7 @@ So you want to expose some of your Appsync queries (but not all!) to public user
 
 3. For the unauthenticated role, specifically assign the fields/types you want.
 
-If you'd like to be begin your journey of a PhD in reading AWS documentation of how to do this, start [here], or [here].
+If you'd like to be begin your journey of a PhD in reading AWS documentation of how to do this, start [here][2], or [here][3].
 
 Alternatively, you can copy this Role/Policy template where I give access to two subscriptions and adjust to add your Query/Mutations/exactly
 
@@ -82,4 +80,6 @@ Amplify.configure(config)
 
 That's it, restart your app and your users should be able to use the queries you've defined as allowed by unauthenticated users.
 
-[1]: https://the dude's link to AWS Appsync ssubscriptions not working cuz stupid ass headers
+[1]: https://www.josephso.dev/aws-appsync-with-custom-domain-graphql-subscription-issue-and-workaround/
+[2]: https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsappsync.html#awsappsync-field
+[3]: https://docs.aws.amazon.com/appsync/latest/devguide/security_iam_service-with-iam.html#security_iam_service-with-iam-id-based-policies

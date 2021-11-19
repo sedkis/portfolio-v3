@@ -20,9 +20,9 @@ This flow suggests to use the signature of the JWT access token on the client si
 
 That's really it. There are some IAM solutions shouting about it as well, such as [Curity][1].
 
-Do you want to see what it looks like in practice? Here's a link to a guide that shows a real world example [implemented with Tyk][2].
+Here's a link to a guide that shows a real world example [implemented with Tyk][2].
 
-## Here's the tl;dr version;
+## Or, the tl;dr version
 
 A regular example of password flow using client credentials to get an access token:
 
@@ -48,20 +48,25 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 ```
 
 We can plug that into jwt.io and see the Base64 decoded payload:
+![jwt example](https://miro.medium.com/max/1400/1*5fmlA76gXX9h9Aso8Qyb5A.png)
 
 Clearly, the access token can contain sensitive information that we don’t want to leak.
 
-The split token flow then adds an API gateway such as Tyk or service in the middle that does the following:
+## Split Token Flow
 
-1. receives the request from client
-2. forwards it the IAM solution
-3. receives the access token
-4. Splits it, returning the signature to the client only, and storing in a local cache/key value store, where the key is the signature and the value is the whole JWT
+The split token flow adds an API gateway or service such as Tyk in the middle that does the following:
+
+![split token flow diagram](https://curity.io/images/resources/architect/api-security/split-token-flow.svg?v=20210408)
+[source][1]
+
+1. Service/API Gateway receives the request from client
+2. forwards it the IAM solution & receives the access token
+3. Splits it, returning the signature to the client only, and storing in a local cache/key value store, where the key is the signature and the value is the whole JWT
 
 So the request now looks like this:
 
 ```bash
-$ curl http://tyk-gw/auth/token \
+$ curl http://api-gw.com/auth/token \
 -d grant_type=client_credentials \
 -d client_id=efd952c8-df3a-4cf5–98e6–868133839433 \
 -d client_secret=0ede3532-f042–4120-bece-225e55a4a2d6
@@ -75,11 +80,11 @@ $ curl http://tyk-gw/auth/token \
 }
 ```
 
-Notice that the returned response is considerably smaller than before. As it’s just the signature of the access_token field.
+Notice that the returned response is considerably smaller than before. As it’s just the signature of the original access token.
 
 Now, our clients use this new opaque token to access APIs, and then the JWT is reconstructed in our API Gateway, far away from the prying eyes of any clients!
 
 Would you use a flow like this today? Let me know :)
 
-[1]: Curity link here
+[1]: https://curity.io/resources/learn/split-token-pattern/
 [2]: https://sedkyaboushamalah-78619.medium.com/lets-stop-using-jwts-client-side-20df56791b47
