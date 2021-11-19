@@ -1,0 +1,85 @@
+---
+title: Setting up AWS Appsync for unauthenticated users
+date: '2021-11-2'
+tags: ['authentication', 'APIs', 'AWS']
+draft: false
+summary: 'How to further lock yourself into AWS cloud, because you have no choice but to :)'
+images: []
+layout: PostLayout
+---
+
+## What are you reading today?
+
+This piece is both a warning to architects considering AWS Appync as well an actual how-to of how to implement unauthenticated access, skip down to the actual guide
+
+## The word of warning
+
+So you decided to build your app on top of AWS' Appsync.
+
+And that's great, because like me, it allows you forego the need for backend developers, or even have to worry about infrastructure. In short, your dev velocity will be sky high. Initially.
+
+But then, your app matured, and you realized that AWS (intentionally) makes it difficult to go outside their platform to solve regular use case problems.
+
+For example, let's say your APP has authenticated and unauthenticated users. Fairly simple right?
+
+The right approach in a microservices environment is to use an API Gateway like Tyk for a centralized API management and authentication strategy.
+
+This is not possible with [AWS Appsync subscriptions][1] which are used to build real-time apps.
+
+AWS forces you to use their AWS IAM solutions for authentication and authorization. So if your company is using Okta, Gluu, or any other IAM, forget it, it's not possible unless it's federated by AWS Cognito.
+
+Welcome to vendor-lock in hell. Fine AWS, you win. I'll learn your stupid IAM solution to solve a problem I already solved across a hundred different services.
+
+## The Actual Guide
+
+So you want to expose some of your Appsync queries (but not all!) to public users, so that users can use/interact with your app before having to sign up. Makes sense!!
+
+1. Set your Appsync API to be protected by IAM
+
+![appsync authentication](https://res.cloudinary.com/practicaldev/image/fetch/s--1sHzhtTR--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/uy4vak1yuabytgztp6yp.png)
+
+2. Create a Cognito identity pool, and create a role for unauthenticated users:
+   ![identity pool setup](https://res.cloudinary.com/practicaldev/image/fetch/s--6edkZI59--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/boka9y85ivyu0xp65b3u.png)
+
+3. For the unauthenticated role, specifically assign the fields/types you want.
+
+If you'd like to be begin your journey of a PhD in reading AWS documentation of how to do this, start [here], or [here].
+
+Alternatively, you can copy this Role/Policy template where I give access to two subscriptions and adjust to add your Query/Mutations/exactly
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": "appsync:GraphQL",
+      "Resource": [
+        "arn:aws:appsync:*:*:apis/*/types/*/fields/onCreateOrders",
+        "arn:aws:appsync:*:*:apis/*/types/*/fields/onUpdateOrders"
+      ]
+    }
+  ]
+}
+```
+
+Finally, in our JS code, I use the Amplify SDK, so here's how I configure that:
+
+```JS
+const config = awsRealtimeConfig: {
+        aws_appsync_graphqlEndpoint: "https://<graphql-id>.appsync-api.<aws-region>.amazonaws.com/graphql",
+        aws_appsync_region: "<region>",
+        aws_appsync_authenticationType: 'AWS_IAM',
+        Auth: {
+            identityPoolId: 'us-east-2:<pool-id-here>',
+            region: 'us-east-2',
+        }
+    },
+
+Amplify.configure(config)
+```
+
+That's it, restart your app and your users should be able to use the queries you've defined as allowed by unauthenticated users.
+
+[1]: https://the dude's link to AWS Appsync ssubscriptions not working cuz stupid ass headers

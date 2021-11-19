@@ -18,9 +18,9 @@ There are two types of access tokens in the OAuth flow, opaque and JWT (JWS more
 
 This flow suggests to use the signature of the JWT access token on the client side, and storing the header and claims of the JWT server side. Thus, we get the flexibility of JWTs by being able to store session information in JWT claims, and we get the security of an Opaque access token.
 
-That's really it. There are some IAM solutions shouting about it as well, such as [Curity].
+That's really it. There are some IAM solutions shouting about it as well, such as [Curity][1].
 
-Do you want to see what it looks like in practice? Here's a link to a guide that shows a real world example implemented with Tyk.
+Do you want to see what it looks like in practice? Here's a link to a guide that shows a real world example [implemented with Tyk][2].
 
 ## Here's the tl;dr version;
 
@@ -80,3 +80,6 @@ Notice that the returned response is considerably smaller than before. As it’s
 Now, our clients use this new opaque token to access APIs, and then the JWT is reconstructed in our API Gateway, far away from the prying eyes of any clients!
 
 Would you use a flow like this today? Let me know :)
+
+[1]: Curity link here
+[2]: https://sedkyaboushamalah-78619.medium.com/lets-stop-using-jwts-client-side-20df56791b47
