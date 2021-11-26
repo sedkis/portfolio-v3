@@ -16,16 +16,16 @@ export default function Home({ authorDetails }) {
   return (
     <>
       <PageSEO title={siteMetadata.title} description={siteMetadata.description} />
-      {siteMetadata.newsletter.provider !== '' && (
-        <div className="flex items-center justify-center pt-4">
-          <NewsletterForm />
-        </div>
-      )}
       <MDXLayoutRenderer
         layout={frontMatter.layout || 'AuthorLayout'}
         mdxSource={mdxSource}
         frontMatter={frontMatter}
       />
+      {siteMetadata.newsletter.provider !== '' && (
+        <div className="flex items-center justify-center pt-4">
+          <NewsletterForm />
+        </div>
+      )}
     </>
   )
 }
