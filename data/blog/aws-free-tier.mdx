@@ -1,0 +1,197 @@
+---
+title: Building multi-tenant app on AWS Free Tier
+date: '2021-12-07'
+tags: ['aws', 'startups', 'cloud', 'serv', 'ajtima']
+draft: false
+summary: How much does a serverless app cost for 100, 10000, and 1,000,000 users?
+---
+
+This post aims to convey two things
+
+1.  The awesome-ness of free tier providers such as AWS, Google Firebase, Netlify, etc
+2.  The stack we used when building a [multi-tenant restaurant ordering app][1]
+
+When designing the initial architecture of [Serv][1], I knew we had to use serverless architecture because of the success we found with Ajtima:
+
+- fast developer velocity and ramping
+- Easily automatable CICD pipelines
+- no infrastructure to manage (duh)
+
+but one of the other things I took for granted was the **free tier** of AWS. The question is, "how much can we get for free"? And **that** is what this blog will answer.
+
+## Case Study
+
+Let's continue using Serv as the subject of the case study. Serv is a platform that lets restaurant patrons scan a QR code, browse a menu, order items, and pay for them.
+
+We'll run the numbers at 3 different scales:
+
+- `100` daily users
+- `10,000` daily users
+- `1,000,000` daily users
+
+### TL;DR
+
+Having been a solutions architect for a few years, I hate to continue to preface everything with the horrible phrase "it depends", but it is true; YMMV depending on what tools your app is using, and how your users interact with your app.
+
+With that said, Here are the generic numbers specific to the Serv use case you would see at the end of this guide. Continue if you want to see this number broken down by each service in the stack:
+
+| Users     | Running Monthly Costs |
+| --------- | --------------------- |
+| 100       | $0.00                 |
+| 10,000    | $2.77                 |
+| 1,000,000 | $435.25               |
+
+For **100 daily users**, we don't pay a penny. We are completely leeching off of free SaaS platforms like AWS, GitHub, Netlify, and others.
+
+For **10,000 daily users**, or 300,000 unique monthly users & sessions, we pay $2.77 USD per MONTH. That is an absolutely, ridiculously low number, which only serves to highlight the absurd volumes that AWS is accustomed to dealing with. I mean, their pricing is laid out by the millions.
+
+For **1 million unique daily users**, or 30 million monthly users, it would only cost us **$435.25 USD** a month to support all of our infrastructure. How much does your app net you per user?
+
+Hhowever, it's not all roses. It's like when Black Friday deals get you in the door to spend 10 bucks on a 20 dollar shirt, only to have you pay $1,000 for a full price TV while you're there. Vendor lock is diffiuclt to climb out of.
+
+# Each Service in the Stack
+
+## Front End
+
+Serv has two interfaces. An end-user client for restaurant partons to place and pay for orders.
+
+![client view](/static/images/client-view.png)
+
+And a Dashboard view for restaurant staff to manage orders, menu, etc.
+
+![server view](/static/images/server-view.png)
+
+This is just React that gets compiled into HTML/JS/CSS. We can use any host for that. I've been using Netlify & GitHub for years, and never paid a penny (Thank-you [Netlify & GitHub][2]). Netlify has a direct integration with GitHub that allows you to build your dev/staging/production website on pushes and pull requests.
+
+**So far, bill is $0/month.** Because Netlify doesn't charge for traffic, only for build hours in the CD pipeline.
+
+## Back end API functions
+
+The back-end is all in AWS, though a little bit more complex.
+
+We use primarily the following:
+
+- AWS Lambda functions
+- AWS Appsync
+
+### AWS Lambda
+
+AWS Lambda is invoked whenever somebody makes a payment, which is once a day per user. We use Lambda to avoid storing sensitive tokens in the front end.
+
+1 daily user = 30 monthly requests per user
+
+![Lambda Cost](/static/images/lambda-cost.png)
+
+So our new running cost including Lambda
+
+| Daily Users | Running Monthly Costs |
+| ----------- | --------------------- |
+| 100         | $0.00                 |
+| 10,000      | $0.00                 |
+| 1,000,000   | $5.88                 |
+
+<i>Using 50ms per request and 128MB memory consumed</i>
+
+Wow. That's right. To serve 1 MM users per day, or 30 MM requests a month, Lambda costs us....
+
+**$5.88 USD**
+
+To serve 10,000 users a day, it costs us a whopping **NOTHING**.
+
+Next, let's add Appsync into the picture
+
+### AWS Appsync
+
+AWS Appsync is a managed GraphQL API that sits on top of Lambda/DynamoDB/other end points.
+
+Their pricing page lays out what is included in the [free tier][3]:
+
+```
+250,000 query or data modification operations
+250,000 real-time updates
+600,000 connection-minutes
+```
+
+let's run the numbers.
+
+Each user creates one order and receives 4 per session, implying an average group size of 5 people at one table, and the average user spends 5 minutes ordering and paying.
+
+- Daily Groups = Daily Users / 5
+- Connections Per group = 5 mins \* 5 users = 25 mins per group ($0.08 per million updates)
+- Query And Data Per Group = 1 order per user = 5 per group. ($4.00 per million operations)
+- Real Time Updates per group = 5 x 5 = 25 real time Updates per group ($2.00 per million updates)
+
+| Daily Users | Monthly Groups | Connection Minutes p/m | Query and Data Modification Ops p/m | Real-time Updates p/m | Total Cost |
+| ----------- | -------------- | ---------------------- | ----------------------------------- | --------------------- | ---------- |
+| 100         | 600            | 15,000 / $0.00         | 3,000 / $0.00                       | 15,000 / $0.00        | $0.00      |
+| 10,000      | 60,000         | 1,500,000 / $0.072     | 300,000 / $0.20                     | 1,500,000 / $2.50     | $2.772 USD |
+| 1,000,000   | 6,000,000      | 150,000,000 / $11.952  | 30,000,000 / $119.00                | 150,000,000 / $299.50 | $430.452   |
+
+_Note, we didn't add our data transfer charges, but it's a small minority of the overall Appsync charges_
+
+So let's add it to our running totals so far.
+
+For our Front-end, Appsync + Lambda APIs, we finally are paying some money.
+
+| Users     | Running Monthly Costs |
+| --------- | --------------------- |
+| 100       | $0.00                 |
+| 10,000    | $2.77                 |
+| 1,000,000 | $435.25               |
+
+Still really affordable. I mean, `10,000` users is a whole community. And we barely pay more than a shot of espresso **PER MONTH.**
+
+Let's continue with an example that really hurts the bank this time.
+
+## Text-Messaging on AWS SNS
+
+We (initially) decided to use Phone number One-Time-Code sign up & sign in to make the ordering process as simple as possible. We used an awesome [AWS Cloud Formation][5] that spun up all the necessary lambdas and SES topics.
+
+Each unique user will enter their phone number and receive an SMS verification code once per session.
+
+The [price of each text message][4] sent by AWS Pinpoint/SNS is `$0.00581` USD.
+
+That's right, we've left the free tier!
+
+```
+t = Daily Users
+
+t X 30 X 0.00581 = price per month
+
+```
+
+| Daily Users | Monthly Cost |
+| ----------- | ------------ |
+| 100         | $17.43       |
+| 10,000      | $1743.00     |
+| 1,000,000   | $174,300     |
+
+Whoa, what happened? Our costs just increased from leech level to beyond Enterprise.
+
+This is just to highlight that you need to be careful, and can't expect all services to be affordable. Even if we look at the industry-leading [Twilio's pricing][6], we see that SMS is expensive.
+
+Are we screwed? No, we can use Email confirmation, or we can roll our own tools; We have other options.
+
+### Non-managed Services
+
+What if you need to use a non-managed service? For example, we're using Tyk as an API Gateway and API Manager. We can run these workloads on EC2, FarGate, EKS, or one of the other compute services.
+
+We tried a few services, but ended up using EC2 for the affordability.
+
+This one is much more complex to calculate, as you have to figure out how many nodes you need at various RPS benchmarks. Here's a [guide I wrote][7] for Tyk to help us do that.
+
+## Summary
+
+Long story short, it is extremely affordable or FREE to bootstrap your next application on AWS. As a matter of fact, we built Ajtima on Google's FireBase, which is another platform to run full-stack applications on, and found it equally affordable.
+
+Does that mean it's free across the board? No. Some tools are more expensive than others. But all-in-all, a good developer picks the right tool for the job anyway.
+
+Thanks for reading, drop your comments below or reach me via contact options in my footer to start a conversation!
+
+[1]: /tags/serv
+[2]: https://netlify.com
+[3]: https://aws.amazon.com/appsync/pricing/
+[4]: https://aws.amazon.com/pinpoint/pricing/#SMS_text_messages
+[5]: https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:552623489034:applications~amplify-passwordless-sms-auth
+[6]: https://www.twilio.com/sms/pricing/us
+[7]: https://tyk.io/blog/performance-testing-with-tyk-on-aws/
