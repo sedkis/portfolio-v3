@@ -1,23 +1,25 @@
 ---
-title: Building multi-tenant app on AWS Free Tier
-date: '2021-12-07'
+title: Case Study of a full-stack app on AWS
+date: '2021-12-08'
 tags: ['aws', 'startups', 'cloud', 'serv', 'ajtima']
 draft: false
 summary: How much does a serverless app cost for 100, 10000, and 1,000,000 users?
 ---
 
-This post aims to convey two things
+Have you ever wondered how much a full-stack serverless application costs; Especially at scale? Or when it starts to cost money?
 
-1.  The awesome-ness of free tier providers such as AWS, Google Firebase, Netlify, etc
-2.  The stack we used when building a [multi-tenant restaurant ordering app][1]
-
-When designing the initial architecture of [Serv][1], I knew we had to use serverless architecture because of the success we found with Ajtima:
+When designing the initial prototype of [Serv][1], I knew we had to use serverless architecture because of the success we found with Ajtima:
 
 - fast developer velocity and ramping
 - Easily automatable CICD pipelines
 - no infrastructure to manage (duh)
 
-but one of the other things I took for granted was the **free tier** of AWS. The question is, "how much can we get for free"? And **that** is what this blog will answer.
+but one of the other things I took for granted was the **free tier** of AWS; ie "How much can we get for free"? And that's what I'm here to tell you about.
+
+#### What will you get out of this reading ?
+
+1.  The awesome-ness of free tier providers such as AWS, Google Firebase, Netlify, etc
+2.  The stack we used when building a [multi-tenant restaurant ordering app][1]
 
 ## Case Study
 
