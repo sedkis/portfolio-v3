@@ -47,7 +47,7 @@ For **10,000 daily users**, or 300,000 unique monthly users & sessions, we pay $
 
 For **1 million unique daily users**, or 30 million monthly users, it would only cost us **$435.25 USD** a month to support all of our infrastructure. How much does your app net you per user?
 
-Hhowever, it's not all roses. It's like when Black Friday deals get you in the door to spend 10 bucks on a 20 dollar shirt, only to have you pay $1,000 for a full price TV while you're there. Vendor lock is diffiuclt to climb out of.
+However, it's not all roses. It's like when Black Friday deals get you in the door to spend 10 bucks on a 20 dollar shirt, only to have you pay $1,000 for a full price TV while you're there. Vendor lock is diffiuclt to climb out of.
 
 # Each Service in the Stack
 
@@ -63,13 +63,15 @@ And a Dashboard view for restaurant staff to manage orders, menu, etc.
 
 This is just React that gets compiled into HTML/JS/CSS. We can use any host for that. I've been using Netlify & GitHub for years, and never paid a penny (Thank-you [Netlify & GitHub][2]). Netlify has a direct integration with GitHub that allows you to build your dev/staging/production website on pushes and pull requests.
 
-**So far, bill is $0/month.** Because Netlify doesn't charge for traffic, only for build hours in the CD pipeline.
+**So far, our server bills are $0/month.** Because Netlify doesn't charge for traffic, only for build hours in the CD pipeline. Yes, for `1,000,000` users of our front-end app, we don't pay a penny.
+
+_So far._
 
 ## Back end API functions
 
-The back-end is all in AWS, though a little bit more complex.
+The back-end is all in AWS, so slightly more difficult to calculate.
 
-We use primarily the following:
+Serv uses the following:
 
 - AWS Lambda functions
 - AWS Appsync
@@ -98,11 +100,11 @@ Wow. That's right. To serve 1 MM users per day, or 30 MM requests a month, Lambd
 
 To serve 10,000 users a day, it costs us a whopping **NOTHING**.
 
-Next, let's add Appsync into the picture
+<center>![omg wow](/static/images/omg-wow.gif)</center>
 
 ### AWS Appsync
 
-AWS Appsync is a managed GraphQL API that sits on top of Lambda/DynamoDB/other end points.
+AWS Appsync is a managed GraphQL API that sits on top of Lambda/DynamoDB/other data sources.
 
 Their pricing page lays out what is included in the [free tier][3]:
 
@@ -112,14 +114,11 @@ Their pricing page lays out what is included in the [free tier][3]:
 600,000 connection-minutes
 ```
 
-let's run the numbers.
+let's run the numbers. During a session ie single unique daily user:
 
-Each user creates one order and receives 4 per session, implying an average group size of 5 people at one table, and the average user spends 5 minutes ordering and paying.
-
-- Daily Groups = Daily Users / 5
-- Connections Per group = 5 mins \* 5 users = 25 mins per group ($0.08 per million updates)
-- Query And Data Per Group = 1 order per user = 5 per group. ($4.00 per million operations)
-- Real Time Updates per group = 5 x 5 = 25 real time Updates per group ($2.00 per million updates)
+- Average group of customers is 5 people at one table
+- A user creates one order and receives 4 per session
+- Users spends 5 minutes ordering and paying.
 
 | Daily Users | Monthly Groups | Connection Minutes p/m | Query and Data Modification Ops p/m | Real-time Updates p/m | Total Cost |
 | ----------- | -------------- | ---------------------- | ----------------------------------- | --------------------- | ---------- |
@@ -129,9 +128,14 @@ Each user creates one order and receives 4 per session, implying an average grou
 
 _Note, we didn't add our data transfer charges, but it's a small minority of the overall Appsync charges_
 
-So let's add it to our running totals so far.
+<details>
+  <summary>Math things: (can skip)</summary>- Daily Groups = Daily Users / 5 - Connections Per group
+  = 5 mins \* 5 users = 25 mins per group ($0.08 per million updates) - Query And Data Per Group = 1
+  order per user = 5 per group. ($4.00 per million operations) - Real Time Updates per group = 5 x 5
+  = 25 real time Updates per group ($2.00 per million updates)
+</details>
 
-For our Front-end, Appsync + Lambda APIs, we finally are paying some money.
+Our running totals so far:
 
 | Users     | Running Monthly Costs |
 | --------- | --------------------- |
@@ -139,7 +143,9 @@ For our Front-end, Appsync + Lambda APIs, we finally are paying some money.
 | 10,000    | $2.77                 |
 | 1,000,000 | $435.25               |
 
-Still really affordable. I mean, `10,000` users is a whole community. And we barely pay more than a shot of espresso **PER MONTH.**
+Still really affordable. I mean, `10,000` users is a whole community. And to support that across all our front-ends & APIs, we barely have to pay more than a shot of espresso **PER MONTH**.
+
+With `1,000,000` unique daily users, it costs us `$0.000435` per user. It's easy to come out ahead in this age of PAYG.
 
 Let's continue with an example that really hurts the bank this time.
 
@@ -151,12 +157,12 @@ Each unique user will enter their phone number and receive an SMS verification c
 
 The [price of each text message][4] sent by AWS Pinpoint/SNS is `$0.00581` USD.
 
-That's right, we've left the free tier!
+Oh and hey, we've left the free tier! Pinpoint is not included.
 
 ```
 t = Daily Users
 
-t X 30 X 0.00581 = price per month
+t X 30 X 0.00581 = AWS SNS cost per month
 
 ```
 
@@ -168,15 +174,15 @@ t X 30 X 0.00581 = price per month
 
 Whoa, what happened? Our costs just increased from leech level to beyond Enterprise.
 
-This is just to highlight that you need to be careful, and can't expect all services to be affordable. Even if we look at the industry-leading [Twilio's pricing][6], we see that SMS is expensive.
+Are we screwed? Even if we look at the industry-leading [Twilio's pricing][6], we see that SMS is expensive. Maybe we can use email confirmation, or we can roll our own tools; We have other options.
 
-Are we screwed? No, we can use Email confirmation, or we can roll our own tools; We have other options.
+But that's beside the point; The point is to highlight that (unlike Serv) you need to be careful, and can't expect all services to be affordable or you _will_ be surprised month end.
 
 ### Non-managed Services
 
-What if you need to use a non-managed service? For example, we're using Tyk as an API Gateway and API Manager. We can run these workloads on EC2, FarGate, EKS, or one of the other compute services.
+What if you need to use a non-managed service or have your own APIs to run? We can run these workloads on EC2, FarGate, EKS, or one of the other compute services.
 
-We tried a few services, but ended up using EC2 for the affordability.
+For Serv, we ran Tyk APIM and tried a few different compute services, but ended up settling on EC2 for the affordability.
 
 This one is much more complex to calculate, as you have to figure out how many nodes you need at various RPS benchmarks. Here's a [guide I wrote][7] for Tyk to help us do that.
 
@@ -186,7 +192,9 @@ Long story short, it is extremely affordable or FREE to bootstrap your next appl
 
 Does that mean it's free across the board? No. Some tools are more expensive than others. But all-in-all, a good developer picks the right tool for the job anyway.
 
-Thanks for reading, drop your comments below or reach me via contact options in my footer to start a conversation!
+Finally, is this blog all-encompassing? No, of course not. For example, I left out data storage costs, and DynamoDB costs which were behind the Appsync APIs. But they were besides the point; My point was to illustrate the generosity of PAYG Cloud platforms, not get into the weeds of each service.
+
+Would you want to see more in-depth technical architecture diagrams to showcase each component in our tech stack or how it all fits together? Let me know, drop your comments below or reach me via contact options in my footer to start a conversation!
 
 [1]: /tags/serv
 [2]: https://netlify.com
