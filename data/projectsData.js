@@ -1,6 +1,6 @@
 const projectsData = [
   {
-    title: 'Tech Lead, Americas @ Tyk',
+    title: 'Lead Solutions Architect @ Tyk',
     description: `Consulting for the largest brands in the worlds and spear-heading their digital transformation journeys`,
     imgSrc: '/static/images/projects/tyklogo.png',
     href: 'https://www.tyk.io',

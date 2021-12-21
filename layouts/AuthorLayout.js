@@ -26,6 +26,10 @@ export default function AuthorLayout({ children, frontMatter }) {
               <SocialIcon kind="github" href={github} />
               <SocialIcon kind="linkedin" href={linkedin} />
               <SocialIcon kind="twitter" href={twitter} />
+              <SocialIcon
+                kind="cv"
+                href="https://docs.google.com/document/d/1lJH9nU8XLG6Oy8iU6f2EV0PaA6UqWCXtGyShO1CDwHQ/edit"
+              />
             </div>
           </div>
           <div className="pt-8 pb-8 prose dark:prose-dark max-w-none xl:col-span-2">{children}</div>

@@ -36,7 +36,13 @@ const NewsletterForm = ({ title = 'Subscribe to the newsletter' }) => {
 
   return (
     <div>
-      <div className="pb-1 text-lg font-semibold text-gray-800 dark:text-gray-100">{title}</div>
+      <div className="pb-1 text-lg text-center font-semibold text-gray-800 dark:text-gray-100">
+        {title}
+      </div>
+      <p className="text-sm pb-4 text-center">
+        To get content like this and more. <br />
+        I promise not to spam you! <br />
+      </p>
       <form className="flex flex-col sm:flex-row" onSubmit={subscribe}>
         <div>
           <label className="sr-only" htmlFor="email-input">
