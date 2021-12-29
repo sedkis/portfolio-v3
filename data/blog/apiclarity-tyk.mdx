@@ -1,0 +1,113 @@
+---
+title: OSS REST API Observability, Monitoring, & Alerting in K8S
+date: '2021-12-29'
+tags: ['oss', 'tyk', 'kubernetes']
+draft: false
+summary: 'Detect Ghost / Zombie API usage & and generate OAS documentation for your REST APIs inside your K8S Cluster'
+images: []
+layout: PostLayout
+---
+
+_Full disclosure - I am a Tyk employee, and using Tyk API Gateway in this blog_
+
+<hr />
+
+[APIClarity](https://apiclarity.io/) is “an open source cloud native visibility tool for APIs”. What does that mean though? You mean the super-long title isn't clear enough?!
+
+API Clarity is an app that monitors REST API requests in your Kubernetes cluster and compares them against your OAS (OpenAPI specification) documentation, and then reports discrepancies. ie. if your APIs are being used in ways that are NOT expected.
+
+If your APIs do not have OAS documentation, APIClarity generates OAS documentation by aggregating API metadata based on consumption.
+
+Let's play with Tyk OSS + APIClarity and see what we get.
+
+## Hands On
+
+For this, we'll be using a [GitHub repo](https://github.com/sedkodes/tyk-oss-k8s-deployment.git) that deploys OSS Tyk & APIClarity in a few commands. (If you'd like to try the integration step-by-step, check out the APIClarity documentation [here](https://github.com/apiclarity/apiclarity))
+
+1. We follow the README to run Tyk & APIClarity
+
+2. port-forward to both services so we can access them locally.
+
+3. Now, let's generate some API requests against Tyk using the included script:
+
+```
+$ ./generate-apicalls.sh
+Generating load against two APIs.
+Finished generating load against two APIs.
+```
+
+4. Open up APIClarity on our browser via http://localhost:9999
+
+![Dashboard View](/static/images/tyk-apiclarity/step1.png)
+
+We see that Tyk has reported telemetry data to APIClarity from two APIs.
+
+5. Let's upload the included OAS spec in “./oas/jsonplaceholder.json” into APIClarity
+
+![Upload OAS](/static/images/tyk-apiclarity/step2c.gif)
+
+This loads all our endpoints for this API into APIClarity. APIClarity will now compare this with realtime API traffic and alert us to unusual behaviour.
+
+**And just like that, we now have anomaly detection alongside Tyk's secure API Management.**
+
+APIClarity, like Tyk and all good OSS software, is aligned with OSS standards. This means that your teams will be rewarded for already using best-practices such as OAS for your REST APIs.
+
+## OAS Reconstruction
+
+Let's pretend we don't have a spec for HTTPBin.
+
+Here's how we can have APIClarity generate OAS documentation from our API traffic:
+
+![Generate OAS](/static/images/tyk-apiclarity/step3.gif)
+
+That's all we had to do to generate OAS documentation! We can now visit the Swagger sandbox right from the UI and view it in real-time.
+
+![Generate OAS](/static/images/tyk-apiclarity/swagger.png)
+
+API Clarity even generated our Response objects and the field types
+
+![Response Payload](/static/images/tyk-apiclarity/oas-payload.png)
+
+## Real-time Anomaly Detection
+
+Now, let's re-generate more API requests and see what insights APIClarity gathers for us.
+
+```
+$ ./generate-apicalls.sh
+Generating load against two APIs.
+Finished generating load against two APIs.
+```
+
+After refreshing the APIClarity page, we see some alerts:
+
+![Shadow API Alert](/static/images/tyk-apiclarity/api-alert.png)
+
+Here we can see that APIClarity has identified 5 API requests that fall outside of the OAS spec for the Jsonplaceholder API. We can even click into an item for details on that request:
+
+![Shadow API Alert Details](/static/images/tyk-apiclarity/api-alert-details.png)
+
+All-in-all, very powerful stuff.
+
+The team at APIClarity managed to deliver a powerful tool with a very small footprint that sits inside our k8s cluster to give us more visibility and insight into our API traffic. Moreover, in months to come, the APIClarity functionality will be expanded with more testing and analytics tools that have their basis in OWASP API top 10 issues.
+
+From an AppSec or SecOps perspective, this is quite low-hanging fruit!
+
+Keeping in mind that the API Gateway pattern involves all traffic passing through a singular “front-door” into your ecosystem, you've added another layer of protection globally by integrating APIClarity with Tyk. Another bodyguard to bolster the ones already in place!
+
+Though, am I telling you to RUN and install this in your production environments? Of course not. There are many factors to consider, such as:
+
+- How is the telemetry data handled?
+- Is it blocking or non-blocking?
+- How does that affect latency?
+- Is this set up compliant with highly regulated environments?
+
+And so on.
+
+This is intended to get the brain juices running on an otherwise very lightweight and powerful piece of Open Source Technology, something I'm a huge advocate for.
+
+Is this something you would use?
+
+-Sedky
+
+- [Tyk Community Forums](http://community.tyk.io/)
+- [APIClarity GitHub](https://github.com/apiclarity/apiclarity)
