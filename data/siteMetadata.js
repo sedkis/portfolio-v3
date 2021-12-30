@@ -4,7 +4,7 @@ const siteMetadata = {
   headerTitle: 'Sedkodes',
   description: 'A blog on all things tech, cloud, serverless, and start ups.',
   language: 'en-us',
-  siteUrl: 'https://sedky.ca',
+  siteUrl: 'https://sedkodes.com',
   siteRepo: 'https://github.com/sedkis/portfolio-v3',
   siteLogo: '/static/images/s_logo.png',
   image: '/static/images/s_logo.png',
