@@ -48,13 +48,15 @@ We see that Tyk has reported telemetry data to APIClarity from two APIs.
 
 This loads all our endpoints for this API into APIClarity. APIClarity will now compare this with realtime API traffic and alert us to unusual behaviour.
 
-**And just like that, we now have anomaly detection alongside Tyk's secure API Management.**
+**And just like that, we added anomaly detection to our APIM.**
 
-APIClarity, like Tyk and all good OSS software, is aligned with OSS standards. This means that your teams will be rewarded for already using best-practices such as OAS for your REST APIs.
+APIClarity, like all good OSS software, is aligned with OSS standards.
+
+This means that your teams are being rewarded for using best-practice OSS standards such as OAS for your REST APIs documentation.
 
 ## OAS Reconstruction
 
-Let's pretend we don't have a spec for HTTPBin.
+Let's pretend we don't have an OAS spec for HTTPBin.
 
 Here's how we can have APIClarity generate OAS documentation from our API traffic:
 
@@ -88,7 +90,11 @@ Here we can see that APIClarity has identified 5 API requests that fall outside 
 
 All-in-all, very powerful stuff.
 
-The team at APIClarity managed to deliver a powerful tool with a very small footprint that sits inside our k8s cluster to give us more visibility and insight into our API traffic. Moreover, in months to come, the APIClarity functionality will be expanded with more testing and analytics tools that have their basis in OWASP API top 10 issues.
+## Conclusion
+
+APIClarity delivers pretty powerful features with a very small footprint by sitting inside our k8s cluster and giving us more visibility and insight into our API traffic.
+
+Moreover, an insider scoop tells me that the APIClarity functionality will be expanded with more testing and analytics tools that have their basis in OWASP API top 10 issues.
 
 From an AppSec or SecOps perspective, this is quite low-hanging fruit!
 
