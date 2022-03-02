@@ -20,9 +20,7 @@ I love to teach & share.
 
 ## What Will You Find Here?
 
-You'll find lessons from the field during my consulting time with massive, slow-moving dinosaur companies, all the way to bleeding edge companies who aren't afraid to run alpha technology in production!
-
-Also, you'll find technically focussed writing on app building & scaling, and being mindful & productive as an entrepreneur in IT.
+You'll find lessons from the field during my consulting time; From F500 legacy-lovers, to fast-moving startups who aren't afraid to run alpha technology in production!
 
 If you want the corporate version, go read about me on [LinkedIn][4].
 
