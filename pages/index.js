@@ -3,8 +3,6 @@ import siteMetadata from '@/data/siteMetadata'
 import { MDXLayoutRenderer } from '@/components/MDXComponents'
 import { getFileBySlug } from '@/lib/mdx'
 
-import NewsletterForm from '@/components/NewsletterForm'
-
 export async function getStaticProps() {
   const authorDetails = await getFileBySlug('authors', ['default'])
   return { props: { authorDetails } }
