@@ -1,6 +1,6 @@
 const siteMetadata = {
   title: "Sedkode's Blog",
-  author: 'Sedky Abou-Shamalah',
+  author: 'Sedky Shamalah',
   headerTitle: 'Sedkodes',
   description: 'A blog on all things tech, cloud, serverless, and start ups.',
   language: 'en-us',

@@ -1,5 +1,5 @@
 ---
-name: Sedky Abou-Shamalah
+name: Sedky Shamalah
 avatar: /static/images/sedky-mugshot2.png
 occupation: Tech Lead & Enthusiast
 company:
