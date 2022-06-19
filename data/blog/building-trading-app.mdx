@@ -1,0 +1,188 @@
+---
+title: Easily Build a Trading Platform
+date: '2022-06-19'
+tags: ['cloud', 'apis', 'docker']
+draft: false
+summary: 'This is a story about how to leverage existing products to build cool shit quickly.'
+images: []
+layout: PostLayout
+---
+
+The state of technology is pretty damn incredible. There is a product for just about everything.
+
+- Need a service that facilitates payments? Easy.
+- Do you need someone to take care of KYC? Available.
+- How about sending notifications & MFA/One Time Passwords? Plenty of options.
+
+More technically speaking - Do you need a database, APIs, a place to run software? Literally thousands loads of options. I've already
+talked about how [available this is][0].
+
+I have no affiliation with any of the vendors mentioned below, except as a user, at the time of publishing.
+
+Let's take an interesting example - You've decided (that despite the current economic temperature,) you want to build a trading platform.
+
+Here are some tricky things you need to worry about:
+
+- Regulations (anti-money laundering)
+- Protecting user data
+- Handling payments
+
+And then the more boring, obvious things:
+
+- Secure databases
+- Secure APIs
+- etc
+
+What if you didn't have to worry about any of that?
+
+We don't.
+
+As an exercise - let's go through what it would take to build a crypto/equities trading platform.
+
+## The user journey
+
+1.  I want to sign up to the trading platform. We're going to call it `bitcollect`.
+2.  I want to link a bank account to pay with
+3.  I want to purchase & sell assets
+
+The soft requirements:
+
+- My personal information is safe
+- My bank information is safe
+
+## Components
+
+Seeing as this is a tech blog, let's discuss the components involved in a high level:
+
+1.  Front-end, this is the platform itself from the user perspective, where they log on, etc.
+2.  Payments facilitator - Transfering funds between user accounts & our portfolio wallets
+3.  Equities facilitator - Buying/Selling assets
+4.  Backend - Our companies APIs which contain our user journey business logic
+
+![Architecture Diagram](/static/images/trading-app/trading-app-2.png)
+
+### The Journey Begins
+
+#### 1. Registration
+
+The easy part - As an end user who wishes to trade, I want an easy way to sign up to a platform - using Google/Facebook/LinkedIn
+sign in or some equivalent, and I want to add my phone number for Multi-Factor Authentication. There's literally hundreds of startups in this regards.
+
+I like Google's [Firebase][3] because:
+
+- it's **free** for the first million requests per month.
+- Their database, which we'll be using as well, has an equally generous free tier.
+- It's completely managed by Google so we have to do nothing in terms of deployment.
+
+#### 2. Next up, KYC!
+
+At this point, because of a tiny little detail called "laws and regulations", which require us, as a prospective financial services broker to know who our users are, and make sure they're allowed to purchase equities.
+
+This is an entire industry called KYC or "Know Your Customer". We can spend months building this portion into our platform, thus becoming on the hook for managing all the corresponding private user data such as IDs, documents, personal information, and more.
+
+**OR**, we can use a KYC as a service. In fact, if we select the right partners in Payments or Equities facilitators, they can do that for us.
+
+For example, [Alpaca][1] gives us everything we need here.
+
+Not only do they provide us an API for purchasing equities/crypto/etfs on behalf of our users, they also offer
+"KYCaaS", which greatly reduces our burden.
+
+![kyc as a service](/static/images/trading-app/kycaas-1.png)
+
+As we can see in the above diagram - End user private information never touches our servers. We've completely absolved ourselves of any burden here. The end user, via the frontend, sends their KYC details directly to our KYCaaS provider. _They're the guys that have to worry!_
+
+`BitCollect` is simply notified by the KYCaaS provider about the results of the user, given something as arbitrary as a user id, for example.
+
+#### 3. Next up - Payments!
+
+OK - Our user is logged on, and has validated their identity. Next up, we need to programatically transfer money from their accounts to their trading funding account.
+
+Again, we can jump through many legal and financial hoops and work directly with end banks to make this a reality. Adding many months to our launch.
+
+**OR**, we can use a payments facilitator.
+
+For example, [Plaid][4] can help us accomplish what we need here.
+
+![kyc as a service](/static/images/trading-app/plaid.png)
+
+Again - We've completely avoided having any sensitive information, in this example user banking information, ever touch our servers. We've offloaded the technical AND regulatory requirements to our payments facilitator. The only thing we have to protect is a user token representing the bank account.
+
+## Finally - Buying Assets!
+
+Ok great - our user is signed in, their identity is validated, and we have their bank information safely stored with our payments facilitator.
+
+Next up - we need to transfer money to/from their trading account and purchase/sell assets.
+
+I'm going to skip the part where I describe how to do that and jump right to how we're going to do: Partnering with a broker which offers programatic access to purchasing APIs.
+
+We've already mentioned them: [Alpaca][1].
+
+![Architecture Diagram](/static/images/trading-app/trading-app-2.png)
+
+That's it! Let's walk through the above diagram together.
+
+1. The user makes a purchase of an asset through BitCollect platform.
+
+2. BitCollect thus initiates a transfer from the user's bank account to their trading account, in Alpaca.
+
+This is done safely by providing Alpaca with the user's payment facilitator token, i.e. Plaid Link Token.
+
+3. Alpaca then reaches out to Plaid to exchange the user's Link Token for real bank account information
+
+4. Plaid provides Alpaca the user's bank account information, and Alpaca can then initiate a wire/ACH transfer
+
+5. The funds are received in Alpaca
+
+6. BitCollect then places an order for the equity with Alpaca on behalf of the user
+
+7. Alpaca confirms the asset purchase and stores it safely in their platform
+
+8. The user has securely purchased an asset through "BitCollect"
+
+Putting it all together, we can see that we've essentially built a re-seller platform with the lowest amount of risk by utilizing existing services that serve the underlying needs.
+
+### User information
+
+Programatically speaking - how does a user "view their assets?" We simply make an API call, through our backend, to the equities facilitator Alpaca, to retrieve the list of assets.
+
+Here's the only user data we ever need to store in our database:
+
+```json
+  email: "my@user.com",
+  id: "123",
+  name: "Sedky Aboushamalah",
+  plaidAccessToken: "access-003f04d6...",
+  alpacaToken: "processor-ea520de1...."
+```
+
+Do we want to get transactions on behalf of a user? We just use their token on their behalf
+to get data from the corresponding upstream software.
+
+1. Get All Positions
+
+Here's the API call BitCollect front-end (or BitCollect users via REST API) can make to BitCollect back-end to view their positions.
+
+```
+curl --location --request GET 'https://bitcollect:8081/api/positions' --header 'Authorization: Bearer eyJhbGciOiJS...'
+```
+
+How come the requested path is `/api/positions` and not `/api/positions/{user-id}`?
+
+We don't pass a user-id on the front-end?
+
+No. We don't need to!
+
+Our awesome authentication as a service (Firebase) is generating JWT access tokens on behalf of our users. By the time the front-end makes an API call, it sends the access token to BitCollect's backend.
+
+BitCollect's backend then has the user information available in a validated JWT.
+
+So the front-end never has to specify it because the back-end just has to make sure it's received in the access token.
+
+Then the back-end can pull the user information corresponding to the user's access token. It's all quite seamless.
+
+Sorry I don't have a more satisfying ending to this blog as BitCollect is a real application being built, but not yet ready. If you've any more questions, you can email me anytime.
+
+[0]: /blog/aws-free-tier
+[1]: https://alpaca.markets/
+[3]: https://firebase.google.com/
+[4]: https://plaid.com/
